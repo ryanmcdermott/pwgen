@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            margin: 20px;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1em;
+        }
+
+        .form-group {
+            margin-bottom: 1em;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: bold;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 1em;
+        }
+
+        .options label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .slider-container input[type="range"] {
+            flex-grow: 1;
+        }
+
+        .password-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f7f7f7;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1em;
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        .password-display input {
+            border: none;
+            background: transparent;
+            flex-grow: 1;
+            font-size: 1em;
+            color: #333;
+            outline: none;
+        }
+
+        .btn {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        .notice {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 1em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Password Generator</h1>
+
+        <div class="form-group">
+            <label for="lengthSlider">Password Length: <span id="lengthValue">12</span></label>
+            <div class="slider-container">
+                <input type="range" id="lengthSlider" min="4" max="64" value="12">
+            </div>
+        </div>
+
+        <!-- Character sets checkboxes -->
+        <div class="form-group">
+            <label>Include character sets:</label>
+            <div class="options">
+                <label><input type="checkbox" id="uppercase" checked> Uppercase</label>
+                <label><input type="checkbox" id="lowercase" checked> Lowercase</label>
+                <label><input type="checkbox" id="numbers" checked> Numbers</label>
+                <label><input type="checkbox" id="symbols" checked> Symbols</label>
+            </div>
+        </div>
+
+        <!-- Password Display and Copy -->
+        <div class="form-group">
+            <div class="password-display">
+                <input type="text" id="passwordOutput" readonly>
+                <button class="btn" id="copyBtn">Copy</button>
+            </div>
+        </div>
+
+        <div class="notice">Tip: Adjust length and character sets to generate a new password automatically.</div>
+    </div>
+
+    <script>
+        (function () {
+            const lengthSlider = document.getElementById('lengthSlider');
+            const lengthValue = document.getElementById('lengthValue');
+            const uppercaseEl = document.getElementById('uppercase');
+            const lowercaseEl = document.getElementById('lowercase');
+            const numbersEl = document.getElementById('numbers');
+            const symbolsEl = document.getElementById('symbols');
+            const passwordOutput = document.getElementById('passwordOutput');
+            const copyBtn = document.getElementById('copyBtn');
+
+            const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+            const numberChars = "0123456789";
+            const symbolChars = "!@#$%^&*()-_=+[]{};:,.<>/?\\|";
+
+            lengthSlider.addEventListener('input', handleInputChange);
+            uppercaseEl.addEventListener('change', handleInputChange);
+            lowercaseEl.addEventListener('change', handleInputChange);
+            numbersEl.addEventListener('change', handleInputChange);
+            symbolsEl.addEventListener('change', handleInputChange);
+
+            copyBtn.addEventListener('click', copyToClipboard);
+
+            function handleInputChange() {
+                lengthValue.textContent = lengthSlider.value;
+                generatePassword();
+            }
+
+            function generatePassword() {
+                const length = parseInt(lengthSlider.value, 10);
+
+                let charSet = "";
+
+                if (uppercaseEl.checked) {
+                    charSet += uppercaseChars;
+                }
+                if (lowercaseEl.checked) {
+                    charSet += lowercaseChars;
+                }
+                if (numbersEl.checked) {
+                    charSet += numberChars;
+                }
+                if (symbolsEl.checked) {
+                    charSet += symbolChars;
+                }
+
+                if (!charSet) {
+                    charSet = lowercaseChars;
+                }
+
+                let password = "";
+                for (let i = 0; i < length; i++) {
+                    const randIndex = Math.floor(Math.random() * charSet.length);
+                    password += charSet[randIndex];
+                }
+                passwordOutput.value = password;
+            }
+
+            function copyToClipboard() {
+                const pw = passwordOutput.value;
+                if (!pw) return;
+                passwordOutput.select();
+                passwordOutput.setSelectionRange(0, 99999);
+                document.execCommand("copy");
+                alert("Password copied to clipboard!");
+            }
+
+            generatePassword();
+        })();
+    </script>
+</body>
+
+</html>
